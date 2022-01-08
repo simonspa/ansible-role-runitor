@@ -1,0 +1,5 @@
+---
+# defaults file for ansible-role-runitor
+
+runitor_repository: "bdd/runitor"
+runitor_release: "latest"
