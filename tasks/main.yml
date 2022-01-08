@@ -1,0 +1,27 @@
+---
+# tasks file for ansible-role-runitor
+
+- name: Obtain target architecture
+  set_fact:
+    architecture: "linux-{{ ansible_kernel | regex_replace('^.*-([a-z]{3}[0-9]{0,2}).*$', '\\1') }}"
+
+- name: Get releases information
+  delegate_to: localhost
+  become: no
+  uri:
+    url: "https://api.github.com/repos/{{ runitor_repository }}/releases/{%if runitor_release == 'latest' %}latest{% else %}tags/{{ runitor_release }}{% endif %}"
+    return_content: true
+  register: releases
+
+- name: Fetch SHA256 sum for binary
+  set_fact:
+    runitor_sha256: "{{ item | regex_search(' = (.*)$') }}"
+  loop: "{{ lookup('url', releases.json.assets | selectattr('name', 'equalto', 'SHA256') | map(attribute='browser_download_url') | first, wantlist=True) }}"
+  when: item | regex_search(".*" + architecture + "\).*$")
+
+- name: Download release binary
+  get_url:
+    url: "{{ releases.json.assets | selectattr('name', 'match', '.*' + architecture + '$') | map(attribute='browser_download_url') | first }}"
+    dest: /usr/local/bin/runitor
+    mode: 0755
+    checksum: "sha256:{{ runitor_sha256 }}"
