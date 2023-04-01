@@ -5,6 +5,10 @@
   set_fact:
     architecture: "linux-{{ ansible_kernel | regex_replace('^.*-([a-z]{3}[0-9]{0,2}).*$', '\\1') }}"
 
+- set_fact:
+    architecture: "linux-arm"
+  when: architecture == "linux-rpi"
+
 - name: Get releases information
   delegate_to: localhost
   become: no
