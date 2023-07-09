@@ -3,11 +3,7 @@
 
 - name: Obtain target architecture
   set_fact:
-    architecture: "linux-{{ ansible_kernel | regex_replace('^.*-([a-z]{3}[0-9]{0,2}).*$', '\\1') }}"
-
-- set_fact:
-    architecture: "linux-arm"
-  when: architecture == "linux-rpi"
+    architecture: "linux-{{ [ansible_architecture] | map('extract', runitor_deb_architecture) | first }}"
 
 - name: Get releases information
   delegate_to: localhost

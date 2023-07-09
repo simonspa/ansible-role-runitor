@@ -3,3 +3,11 @@
 
 runitor_repository: "bdd/runitor"
 runitor_release: "latest"
+
+runitor_deb_architecture: {
+  "armv6l": "armhf",
+  "armv7l": "armhf",
+  "aarch64": "arm64",
+  "x86_64": "amd64",
+  "i386": "i386"
+}
