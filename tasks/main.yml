@@ -17,7 +17,7 @@
   set_fact:
     runitor_sha256: "{{ item | regex_search(' = (.*)$') }}"
   loop: "{{ lookup('url', releases.json.assets | selectattr('name', 'equalto', 'SHA256') | map(attribute='browser_download_url') | first, wantlist=True) }}"
-  when: item | regex_search(".*" + architecture + "\).*$")
+  when: item is search(architecture ~ '\\)')
 
 - name: Download release binary
   get_url:
